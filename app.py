@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
+import os
 
 app = Flask(__name__)
+
+DATABASE = 'students.db'
 
 # =========================
 # DATABASE INITIALIZATION
@@ -9,7 +12,7 @@ app = Flask(__name__)
 
 def init_db():
 
-    conn = sqlite3.connect('students.db')
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -35,6 +38,10 @@ def init_db():
     conn.close()
 
 
+# Initialize database automatically
+init_db()
+
+
 # =========================
 # HOME PAGE + SEARCH
 # =========================
@@ -44,10 +51,8 @@ def index():
 
     search = request.args.get('search', '')
 
-    conn = sqlite3.connect('students.db')
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-
-    # SEARCH FEATURE
 
     if search:
 
@@ -110,10 +115,8 @@ def add_student():
         year = request.form['year']
         phone = request.form['phone']
 
-        conn = sqlite3.connect('students.db')
+        conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
-
-        # CHECK DUPLICATE ROLL NUMBER
 
         cursor.execute(
             "SELECT * FROM students WHERE roll_number=?",
@@ -167,7 +170,7 @@ def add_student():
 @app.route('/delete/<int:id>')
 def delete_student(id):
 
-    conn = sqlite3.connect('students.db')
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     cursor.execute(
@@ -188,7 +191,7 @@ def delete_student(id):
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_student(id):
 
-    conn = sqlite3.connect('students.db')
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     if request.method == 'POST':
@@ -252,7 +255,5 @@ def edit_student(id):
 # =========================
 
 if __name__ == '__main__':
-
-    init_db()
 
     app.run(debug=True)
