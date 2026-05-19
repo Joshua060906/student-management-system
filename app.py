@@ -47,17 +47,27 @@ def index():
     conn = sqlite3.connect('students.db')
     cursor = conn.cursor()
 
+    # SEARCH FEATURE
+
     if search:
 
         cursor.execute(
             '''
             SELECT * FROM students
-            WHERE roll_number LIKE ?
+
+            WHERE
+
+            roll_number LIKE ?
             OR name LIKE ?
             OR email LIKE ?
             OR course LIKE ?
+            OR year LIKE ?
+            OR phone LIKE ?
             ''',
+
             (
+                f'%{search}%',
+                f'%{search}%',
                 f'%{search}%',
                 f'%{search}%',
                 f'%{search}%',
@@ -104,6 +114,7 @@ def add_student():
         cursor = conn.cursor()
 
         # CHECK DUPLICATE ROLL NUMBER
+
         cursor.execute(
             "SELECT * FROM students WHERE roll_number=?",
             (roll_number,)
@@ -120,10 +131,12 @@ def add_student():
             cursor.execute(
                 '''
                 INSERT INTO students
+
                 (roll_number, name, email, course, year, phone)
 
                 VALUES (?, ?, ?, ?, ?, ?)
                 ''',
+
                 (
                     roll_number,
                     name,
@@ -191,15 +204,18 @@ def edit_student(id):
             '''
             UPDATE students
 
-            SET roll_number=?,
-                name=?,
-                email=?,
-                course=?,
-                year=?,
-                phone=?
+            SET
+
+            roll_number=?,
+            name=?,
+            email=?,
+            course=?,
+            year=?,
+            phone=?
 
             WHERE id=?
             ''',
+
             (
                 roll_number,
                 name,
